@@ -11,42 +11,92 @@
 #define PIN_OUTPUT_BACKWARD 10
 
 
-//define variables
-double Setpoint, Input, Output;
+//PID controller setup
+double Setpoint = 90.0; //target RPM value
+double Input = 0.0; //measured value from encoder
+double Output = 100.0; //PID calculates to controller
 
-//specify links and initial tuning parameters
-double Kp=2, Ki=5, Kd=1;
+double Kp = 1.0; //2
+double Ki = 0.0; //5
+double Kd = 0.0; //1
+
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+
+
+//define variables
+const int pulses_per_rev = 4; //4 holes in wheel
+const int threshold = 300; //light(600)/dark(200) transition value for photoresistor
+
+long pulseCount = 0;
+long lastPulseCount = 0;
+
+bool lastState = false;
+
+unsigned long lastRPMTime = 0;
 
 
 //main setup
 void setup()
 {
-  //initialize the input variables
-  Input = analogRead(PIN_INPUT);
-  Setpoint = 100;
+  Serial.begin(115200);
+ 
+  //define input/output pins
+  pinMode(PIN_INPUT, INPUT);
+  pinMode(PIN_OUTPUT_FORWARD, OUTPUT);
 
-  //turn the PID on
+  myPID.SetOutputLimits(0,250); //limits for motor speed; max is 250
   myPID.SetMode(AUTOMATIC);
-}
 
+  lastRPMTime = millis();
+}
 
 /////////////////////////////////////////////// MAIN CODE ///////////////////////////////////////////////
 
 //main function
 void loop()
 {
-  Input = analogRead(PIN_INPUT);
-  myPID.Compute();
-  analogWrite(PIN_OUTPUT_FORWARD, Output);
+  //read photoresistor value
+  int sensorValue = analogRead(PIN_INPUT);
 
-  // analogWrite(9, 255); //motor (pin 9) full speed
-  // delay(1000);
-  // analogWrite(9, 127); //motor (pin 9) half speed
-  // delay(1000);
-  // analogWrite(9, 50); 
-  // delay(1000);
-  // analogWrite(10, 255); //reverse motor (pin 10) full speed
-  // delay(1000);
+  //convert sensor data to high/low
+  bool currentState = (sensorValue > threshold);
+
+  //count light/dark transitions
+  if(currentState==true && lastState==false)
+  {
+    pulseCount = pulseCount + 1;
+
+    //use for debugging purposes
+    //Serial.print("Pulse Count = ");
+    //Serial.println(pulseCount);
+  }
+
+  lastState = currentState;
+
+  //update pulse count every 500 msec
+  if(millis() - lastRPMTime >= 500) {
+    long pulses = pulseCount - lastPulseCount;
+    
+    lastPulseCount = pulseCount;
+   
+    lastRPMTime = millis();
+
+    //RPM calculation
+    Input = (pulses * 120.0)/pulses_per_rev;
+
+    //PID compute
+    myPID.Compute();
+
+    //use for debugging purposes
+    //Serial.print("Pulses: ");
+    //Serial.println(pulses);
+    //Serial.print("RPM: ");
+    //Serial.println(Input);
+    //Serial.print("Output: ");
+    //Serial.println(Output);
+
+  }
+
+  analogWrite(PIN_OUTPUT_FORWARD,(int)Output);
+
 }
-
