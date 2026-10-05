@@ -12,7 +12,7 @@
 
 
 //PID controller setup
-double Setpoint = 150.0; //target RPM value
+double Setpoint = 180.0; //target RPM value
 double Input = 0.0; //measured value from encoder
 double Output = 60.0; //PID calculates to controller
 
@@ -43,8 +43,8 @@ void setup()
   //define input/output pins
   pinMode(PIN_INPUT, INPUT);
   pinMode(PIN_OUTPUT_FORWARD, OUTPUT);
-
-  myPID.SetOutputLimits(0,250); //limits for motor speed; max is 250
+  
+  myPID.SetOutputLimits(50,250); //limits for motor speed; max is 250
   myPID.SetMode(AUTOMATIC);
 
   lastRPMTime = millis();
@@ -95,8 +95,7 @@ void loop()
     Serial.print("Output: ");
     Serial.println(Output);
 
+    analogWrite(PIN_OUTPUT_FORWARD,(int)Output);
   }
-
-  analogWrite(PIN_OUTPUT_FORWARD,(int)Output);
 
 }
