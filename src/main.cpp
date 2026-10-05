@@ -88,12 +88,14 @@ void loop()
     myPID.Compute();
 
     //use for debugging purposes
-    //Serial.print("Pulses: ");
-    //Serial.println(pulses);
+    /*
+    Serial.print("Pulses: ");
+    Serial.println(pulses);
     Serial.print("RPM: ");
     Serial.println(Input);
     Serial.print("Output: ");
     Serial.println(Output);
+    */
 
     analogWrite(PIN_OUTPUT_FORWARD,(int)Output);
   }
