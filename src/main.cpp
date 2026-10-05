@@ -12,9 +12,9 @@
 
 
 //PID controller setup
-double Setpoint = 90.0; //target RPM value
+double Setpoint = 150.0; //target RPM value
 double Input = 0.0; //measured value from encoder
-double Output = 100.0; //PID calculates to controller
+double Output = 60.0; //PID calculates to controller
 
 double Kp = 1.0; //originally = 2
 double Ki = 0.0; //originally = 5
@@ -90,10 +90,10 @@ void loop()
     //use for debugging purposes
     //Serial.print("Pulses: ");
     //Serial.println(pulses);
-    //Serial.print("RPM: ");
-    //Serial.println(Input);
-    //Serial.print("Output: ");
-    //Serial.println(Output);
+    Serial.print("RPM: ");
+    Serial.println(Input);
+    Serial.print("Output: ");
+    Serial.println(Output);
 
   }
 
