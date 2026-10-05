@@ -16,9 +16,9 @@ double Setpoint = 90.0; //target RPM value
 double Input = 0.0; //measured value from encoder
 double Output = 100.0; //PID calculates to controller
 
-double Kp = 1.0; //2
-double Ki = 0.0; //5
-double Kd = 0.0; //1
+double Kp = 1.0; //originally = 2
+double Ki = 0.0; //originally = 5
+double Kd = 0.0; //originally = 1
 
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
